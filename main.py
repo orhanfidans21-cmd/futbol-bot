@@ -23,18 +23,21 @@ def maclari_tara():
                 h_xg = float(mac.get('home_xg', 0))
                 a_xg = float(mac.get('away_xg', 0))
                 skor = mac.get('score', '0-0')
+                dakika = mac.get('minute', '??')
 
-                # rtP Formülü: Toplam xG'yi 100 ile çarpıyoruz
+                # rtP HESABI: Toplam xG'yi 100 ile çarpıp baskı puanı yapıyoruz
+                # Örn: 0.75 xG varsa rtP = 75 olur.
                 rtp_puani = (h_xg + a_xg) * 100
 
-                # KRİTİK FİLTRE: Sadece rtP 70'ten büyükse mesaj at!
+                # ANALİZ FİLTRESİ: Sadece baskı 70'i geçerse haber ver!
                 if rtp_puani >= 70:
-                    mesaj = (f"🚀 rtP SİNYALİ: {int(rtp_puani)}\n"
+                    mesaj = (f"🔥 **rtP ANALİZ SİNYALİ: {int(rtp_puani)}**\n\n"
                              f"🏟 {ev} vs {dep}\n"
-                             f"📈 Skor: {skor} | Toplam xG: {round(h_xg + a_xg, 2)}\n"
-                             f"🔥 Baskı artıyor, gol yakın abem!")
+                             f"⏰ Dakika: {dakika} | Skor: {skor}\n"
+                             f"📈 Toplam xG: {round(h_xg + a_xg, 2)}\n\n"
+                             f"🚀 Abe bu maçta baskı tavan, gol kapıda!")
                     
-                    requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}")
+                    requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}&parse_mode=Markdown")
         
     except Exception as e:
         print(f"Hata: {e}")
@@ -42,4 +45,4 @@ def maclari_tara():
 if __name__ == "__main__":
     while True:
         maclari_tara()
-        time.sleep(600) # 10 dakikada bir kontrol (API limitini yemeyelim)
+        time.sleep(600) # 10 dakikada bir kontrol (Limiti aşmamak için)
