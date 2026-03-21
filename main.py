@@ -1,26 +1,19 @@
 import requests
 import time
-import os
 
-# Ayarlar (Buraya Telegram bilgilerini girebilirsin veya Render üzerinden bağlayabiliriz)
-TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE"
-CHAT_ID = "1157525263"
+# Buradaki bilgileri resimdeki gibi (tırnak içinde) doldur
+TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE" # Kendi Token'ını yaz
+CHAT_ID = "1157525263"        # Kendi ID'ni yaz
 
-def analiz_et():
-    # Burada ücretsiz bir canlı skor API'si kullanacağız
-    # Örnek olarak mantığı kuruyorum:
-    url = "https://fixturedownload.com/feed/json/epl-2025" # Örnek ücretsiz veri
+def test_mesaji_gonder():
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text=Abe_mesaj_geldi_mi?"
     try:
-        data = requests.get(url).json()
-        for mac in data:
-            # Senin %90'lık stratejin buraya gelecek
-            # Eğer dakika ve baskı verisi uygunsa mesaj at:
-            if "Baskı Kriteri" == "Uygun":
-                 msg = f"🎯 Sinyal: {mac['HomeTeam']} maçı kriterlere uyuyor!"
-                 requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={msg}")
-    except:
-        print("Veri çekilemedi...")
+        requests.get(url)
+        print("Telegram'a mesaj gönderildi!")
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
 
+# Bot her 1 dakikada bir sana mesaj atacak
 while True:
-    analiz_et()
-    time.sleep(300) # 5 dakikada bir kontrol et
+    test_mesaji_gonder()
+    time.sleep(60)
