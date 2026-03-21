@@ -3,7 +3,7 @@ import time
 
 TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE"
 CHAT_ID = "1157525263"
-API_KEY = "775097e24c484be096fe49a8c0fb75ca"
+API_KEY = "5d21ec75e8mshd677bd9e11f5b81p15ed7ajsn581a07c02212"
 
 def maclari_tara():
     url = "https://api.football-data.org/v4/matches"
