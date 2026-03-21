@@ -1,25 +1,42 @@
 import requests
 import time
-import os
 
-# Senin bilgilerini buraya tırnak içinde yazdım
-TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE"
-CHAT_ID = "1157525263"
+# --- AYARLAR ---
+TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE" # Senin Token'ın
+CHAT_ID = "1157525263" # Senin ID'n
+API_KEY = "775097e24c484be096fe49a8c0fb75ca"
 
-def mesaj_at():
-    text = "Abe_sonunda_baglandim_analiz_hazir!"
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
+def maclari_tara():
+    # Canlı maçları çeken adres
+    url = "https://api.football-data.org/v4/matches"
+    headers = {"X-Auth-Token": API_KEY}
+    
     try:
-        requests.get(url)
-        print("Mesaj gönderildi!")
-    except:
-        print("Hata!")
+        response = requests.get(url, headers=headers).json()
+        matches = response.get('matches', [])
+        
+        for mac in matches:
+            # Sadece canlı (IN_PLAY) olan maçlara bakıyoruz
+            if mac['status'] == 'IN_PLAY':
+                ev_sahibi = mac['homeTeam']['name']
+                deplasman = mac['awayTeam']['name']
+                skor_ev = mac['score']['fullTime']['home']
+                skor_dep = mac['score']['fullTime']['away']
+                
+                # rtP ANALİZ MANTIĞI: 
+                # Ücretsiz API'ler anlık baskı (rtP) verisini her zaman vermez.
+                # Bu yüzden skor takibi ve önemli anlara göre botu kuruyoruz.
+                
+                mesaj = f"⚽ CANLI MAÇ SİNYALİ\n\n🏟 {ev_sahibi} {skor_ev} - {skor_dep} {deplasman}\n📈 Durum: Maç devam ediyor!\n🚀 rtP Analizi Bekleniyor..."
+                
+                # Telegram'a gönder
+                requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}")
+                
+    except Exception as e:
+        print(f"Hata: {e}")
 
 if __name__ == "__main__":
-    # Render'ın "Port" hatası vermemesi için bu 2 satır şart:
-    print("Bot baslatiliyor...")
-    mesaj_at() # Çalışır çalışmaz ilk mesajı atar
-    
+    print("Analiz botu devreye girdi, maçlar taranıyor...")
     while True:
-        # Botun kapanmaması için döngüde tutuyoruz
-        time.sleep(60)
+        maclari_tara()
+        time.sleep(600) # Ücretsiz sınır dolmasın diye 10 dakikada bir kontrol eder
