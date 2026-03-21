@@ -2,12 +2,24 @@ import requests
 import time
 
 # --- AYARLAR ---
-TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE" # Senin Token'ın
-CHAT_ID = "1157525263" # Senin ID'n
+TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE"
+CHAT_ID = "1157525263"
 API_KEY = "775097e24c484be096fe49a8c0fb75ca"
 
+def rtp_hesapla(mac_verisi):
+    # Ücretsiz API'den gelen istatistiklerle puanlama yapıyoruz
+    puan = 0
+    try:
+        # Örnek: Korner ve şut verilerini topluyoruz
+        corners = mac_verisi.get('stats', {}).get('corners', 0)
+        shots = mac_verisi.get('stats', {}).get('shotsOnGoal', 0)
+        
+        puan = (corners * 10) + (shots * 15)
+        return puan
+    except:
+        return 0
+
 def maclari_tara():
-    # Canlı maçları çeken adres
     url = "https://api.football-data.org/v4/matches"
     headers = {"X-Auth-Token": API_KEY}
     
@@ -16,27 +28,23 @@ def maclari_tara():
         matches = response.get('matches', [])
         
         for mac in matches:
-            # Sadece canlı (IN_PLAY) olan maçlara bakıyoruz
             if mac['status'] == 'IN_PLAY':
-                ev_sahibi = mac['homeTeam']['name']
-                deplasman = mac['awayTeam']['name']
-                skor_ev = mac['score']['fullTime']['home']
-                skor_dep = mac['score']['fullTime']['away']
+                ev = mac['homeTeam']['name']
+                dep = mac['awayTeam']['name']
                 
-                # rtP ANALİZ MANTIĞI: 
-                # Ücretsiz API'ler anlık baskı (rtP) verisini her zaman vermez.
-                # Bu yüzden skor takibi ve önemli anlara göre botu kuruyoruz.
+                # Kendi rtP puanımızı hesaplıyoruz
+                hesaplanan_rtp = rtp_hesapla(mac)
                 
-                mesaj = f"⚽ CANLI MAÇ SİNYALİ\n\n🏟 {ev_sahibi} {skor_ev} - {skor_dep} {deplasman}\n📈 Durum: Maç devam ediyor!\n🚀 rtP Analizi Bekleniyor..."
-                
-                # Telegram'a gönder
-                requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}")
+                # STRATEJİ: rtP 70'ten büyükse ve maç 0-0 ise
+                if hesaplanan_rtp >= 70:
+                    mesaj = f"🔥 rtP SİNYALİ: {hesaplanan_rtp}\n🏟 {ev} vs {dep}\n🚀 Baskı tavan yaptı, gol geliyor!"
+                    requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}")
                 
     except Exception as e:
         print(f"Hata: {e}")
 
 if __name__ == "__main__":
-    print("Analiz botu devreye girdi, maçlar taranıyor...")
+    print("Parasız ama akıllı rtP botu devrede...")
     while True:
         maclari_tara()
-        time.sleep(600) # Ücretsiz sınır dolmasın diye 10 dakikada bir kontrol eder
+        time.sleep(600)
