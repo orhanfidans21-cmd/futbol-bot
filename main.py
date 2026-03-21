@@ -3,8 +3,8 @@ import time
 import os
 
 # Ayarlar (Buraya Telegram bilgilerini girebilirsin veya Render üzerinden bağlayabiliriz)
-TOKEN = "TELEGRAM_BOT_TOKEN_BURAYA"
-CHAT_ID = "TELEGRAM_ID_BURAYA"
+TOKEN = "8722918294:AAEcpreA9fn9qtVXz5YBBAC7M19jo8-KUTE"
+CHAT_ID = "1157525263"
 
 def analiz_et():
     # Burada ücretsiz bir canlı skor API'si kullanacağız
