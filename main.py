@@ -36,7 +36,7 @@ def maclari_tara():
                 hesaplanan_rtp = rtp_hesapla(mac)
                 
                 # STRATEJİ: rtP 70'ten büyükse ve maç 0-0 ise
-                if hesaplanan_rtp >= 70:
+                if hesaplanan_rtp >= 0:
                     mesaj = f"🔥 rtP SİNYALİ: {hesaplanan_rtp}\n🏟 {ev} vs {dep}\n🚀 Baskı tavan yaptı, gol geliyor!"
                     requests.get(f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}")
                 
